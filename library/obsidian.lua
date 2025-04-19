@@ -2630,6 +2630,10 @@ do
 
         Toggles[Idx] = Toggle
 
+        if Info.Default then
+            Toggle:SetValue(true)
+        end
+
         return Toggle
     end
 
