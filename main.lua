@@ -270,7 +270,7 @@ function auto_mob()
             teleport(mob:GetPivot() * CFrame.new(0, config.y_level or 2, 0.1))
             task.wait(config.kill_speed or 0.5)   
         end
-        fire_remote({Event = "PunchAttack", Enemy = mob.Name}, nil, "ENEMY_EVENT")
+        fire_remote({Event = "PunchAttack", Enemy = mob.Name}, "\4", "ENEMY_EVENT")
     end
 end
 
