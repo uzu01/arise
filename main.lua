@@ -1,5 +1,5 @@
 if not game:IsLoaded() then game.Loaded:Wait() end
-loadstring(game:HttpGet(get_github_file("global.lua")))()
+get_github_file("global.lua")
 
 player.Idled:Connect(function()
     virtual_user:CaptureController()
@@ -19,7 +19,7 @@ local data_remote_event = replicated_storage.BridgeNet2.dataRemoteEvent
 local bridge_net_2 = require(replicated_storage.BridgeNet2)
 
 local need_to_arise = false
-local shorten = loadstring(game:HttpGet(get_github_file("util/shorten.lua")))()
+local shorten = get_github_file("util/shorten.lua")
 
 local rewards_old = {}
 local drop_image = {}
@@ -466,7 +466,7 @@ getgenv().run_connection = run_service.RenderStepped:Connect(function()
     end
 end)
 
-local library = loadstring(game:HttpGet(get_github_file("library/obsidian.lua")))()
+local library = get_github_file("library/obsidian.lua")
 local window = library:CreateWindow({Title = "uzu01", Footer = "v1.2", ToggleKeybind = Enum.KeyCode.LeftControl, Center = true, ShowCustomCursor = false})
 local home = window:AddTab("Main", "tractor")
 local webhook = window:AddTab("Webhook", "webhook")
