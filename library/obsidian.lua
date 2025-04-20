@@ -671,24 +671,8 @@ function Library:MouseIsOverFrame(Frame: GuiObject, Mouse: Vector2): boolean
         and Mouse.Y <= AbsPos.Y + AbsSize.Y
 end
 
-function Library:SafeCallback(Func: (...any) -> ...any, ...: any)
-    if not (Func and typeof(Func) == "function") then
-        return
-    end
-
-    local Success, Response = pcall(Func, ...)
-    if Success then
-        return Response
-    end
-
-    local Traceback = debug.traceback():gsub("\n", " ")
-    local _, i = Traceback:find(":%d+ ")
-    Traceback = Traceback:sub(i + 1):gsub(" :", ":")
-
-    task.defer(error, Response .. " - " .. Traceback)
-    if Library.NotifyOnError then
-        Library:Notify(Response)
-    end
+function Library:SafeCallback(func, any)
+    return func(any)
 end
 
 function Library:MakeDraggable(UI: GuiObject, DragFrame: GuiObject, IgnoreToggled: boolean?, IsMainWindow: boolean?)
@@ -1211,6 +1195,8 @@ function Library:OnUnload(Callback)
 end
 
 function Library:Unload()
+    print("Unloading library...")
+
     for Index = #Library.Signals, 1, -1 do
         local Connection = table.remove(Library.Signals, Index)
         Connection:Disconnect()
@@ -2630,10 +2616,6 @@ do
 
         Toggles[Idx] = Toggle
 
-        if Info.Default then
-            Toggle:SetValue(true)
-        end
-
         return Toggle
     end
 
@@ -2853,6 +2835,10 @@ do
 
         Toggles[Idx] = Toggle
 
+        if Toggle.Value then
+            Toggle:SetValue(true)
+        end
+
         return Toggle
     end
 
@@ -2912,7 +2898,7 @@ do
             Size = UDim2.new(1, 0, 0, 21),
             Text = Input.Value,
             TextEditable = not Input.Disabled,
-            TextScaled = true,
+            TextSize = 14,
             TextXAlignment = Enum.TextXAlignment.Left,
             Parent = Holder,
         })
@@ -5295,5 +5281,4 @@ Library:GiveSignal(Players.PlayerRemoving:Connect(OnPlayerChange))
 Library:GiveSignal(Teams.ChildAdded:Connect(OnTeamChange))
 Library:GiveSignal(Teams.ChildRemoved:Connect(OnTeamChange))
 
-getgenv().Library = Library
 return Library
