@@ -201,7 +201,14 @@ function hide_name()
     root_part.PlayerTag.Main.GuildIcon.Image = ""    
 end
 
+function doing_castle()
+    local min = os.date("*t").min
+    return min >= 45 and min <= 57 and config.auto_castle
+end
+
 function start_dungeon()
+    if doing_castle() then return end
+
     fire_remote({Type = "Gems", Event = "DungeonAction", Action = "BuyTicket"}, nil, "GENERAL_EVENT")
     fire_remote({Event = "DungeonAction", Action = "Create"}, nil, "GENERAL_EVENT")
     
@@ -281,9 +288,9 @@ function auto_castle()
         if replicated_storage:GetAttribute("IsCastle") then 
             local castle_room = replicated_storage:GetAttribute("CurrentRoom")
 
-            if castle_room and castle_room > (config.leave_after_floor or 100) and minute >= 45 and minute <= 57 then
+            if castle_room and castle_room > (config.leave_after_floor or 100) then
                 send_drops()
-                player:Kick("rejoining, player has reached the floor limit")
+                player:Kick("rejoining")
                 rejoin(87039211657390)
                 task.wait(1)
             end    
@@ -291,6 +298,12 @@ function auto_castle()
         end
         
         if minute >= 45 and minute <= 57 then
+            if not replicated_storage:GetAttribute("IsCastle") and game.PlaceId ~= 87039211657390 then
+                player:Kick("rejoining")
+                rejoin(87039211657390)
+                task.wait(1)
+            end
+
             fire_remote({Event = "CastleAction", Action = "BuyTicket", Type = "Gems"}, nil, "GENERAL_EVENT")
             task.wait(0.5)
             fire_remote({Event = "CastleAction", Action = "Join", Check = config.auto_skip_floor}, nil, "GENERAL_EVENT")
@@ -431,10 +444,21 @@ getgenv().run_connection = run_service.RenderStepped:Connect(function()
     if can_teleport() then
         no_clip()
     end
+
+    local mob = get_mobs("nearest")
+    if not mob then return end
+    
+    for i, v in workspace.__Main.__Pets[player.UserId]:GetChildren() do
+        local model = v:FindFirstChildWhichIsA("Model")
+        
+        if model and get_distance(mob:GetPivot().p) <= 300 then
+            model:PivotTo(mob:GetPivot())
+        end
+    end
 end)
 
 local library = loadstring(game:HttpGet(get_github_file("library/obsidian.lua")))()
-local window = library:CreateWindow({Title = "uzu01", Footer = "v1.0", ToggleKeybind = Enum.KeyCode.LeftControl, Center = true, ShowCustomCursor = false})
+local window = library:CreateWindow({Title = "uzu01", Footer = "v1.2", ToggleKeybind = Enum.KeyCode.LeftControl, Center = true, ShowCustomCursor = false})
 local home = window:AddTab("Main", "tractor")
 local webhook = window:AddTab("Webhook", "webhook")
 
