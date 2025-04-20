@@ -606,6 +606,11 @@ tab.misc:AddToggle("", {Text = "Hide Name - CLIENT", Default = config.hide_name,
     task.spawn(hide_name)
 end})
 
+tab.misc:AddToggle("", {Text = "Auto Rejoin", Default = config.auto_rejoin, Callback = function(v)
+    config.auto_rejoin = v
+    save()
+end})
+
 tab.misc:AddToggle("", {Text = "Auto Execute", Default = config.auto_execute, Callback = function(v)
     config.auto_execute = v
     save()
@@ -677,5 +682,19 @@ end})
 time_label = tab.info:AddLabel("Server Time:")
 cash_label = tab.info:AddLabel("Cash Earned:")
 gems_label = tab.info:AddLabel("Gems Earned:")
+
+for i, v in core_gui.RobloxPromptGui.promptOverlay:GetChildren() do
+    if v.Name == "ErrorPrompt" and config.auto_rejoin then
+        player:Kick("Rejoining")
+        teleport_service:Teleport(87039211657390, player)
+    end
+end
+
+core_gui.RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(v)
+    if v.Name == "ErrorPrompt" and config.auto_rejoin then
+        player:Kick("Rejoining")
+        teleport_service:Teleport(87039211657390, player)
+    end
+end)
 
 print("script laoded")
