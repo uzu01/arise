@@ -27,6 +27,7 @@ local drop_list = {}
 
 local potions = {"GemsBoost", "CoinsBoost", "ShadowBoost", "DropsBoost", "ExpBoost"}
 local dusts = {"Legendary To Rare", "Common To Rare", "Rare To Legendary", "Rare To Common"}
+local ranks = {"E", "D", "C", "B", "A", "S", "SS"}
 local utf8_chars = {"\a", "\b", "\f", "\n", "\r", "\t", "\v", "\z", "\0", "\1", "\2", "\3", "\4", "\5", "\6", "\7", "\8", "\9"}
 
 local rewards = {
@@ -158,6 +159,16 @@ function get_weapons()
         table.insert(weapons[weapon_name][weapon_rank], v.Name)
     end
     return weapons
+end
+
+function get_shadows()
+    local shadows = {}
+
+    for i, v in player.leaderstats.Inventory.Pets:GetChildren() do
+        if v:GetAttribute("Locked") or v:GetAttribute("Equipped") and v:GetAttribute("Rank") >= 8 then continue end
+        table.insert(shadows, {id = v, rank = v:GetAttribute("Rank")})
+    end
+    return shadows
 end
 
 function get_rune_id(display)
@@ -344,6 +355,21 @@ function auto_upgrade_weapon()
     end
 end
 
+function auto_sell_shadow()
+    local shadows = get_shadows()
+    local sell_table = {}
+    
+    for i, v in config.selected_ranks do
+        for i2, v2 in shadows do
+            if v2.rank == table.find(ranks, v) then
+                table.insert(sell_table, v2.id.Name)
+            end
+        end
+    end
+    
+    fire_remote({["Event"] = "SellPet",["Pets"] = sell_table}, nil, "PET_EVENT")
+end
+
 function auto_dungeon()
     while task.wait() and config.auto_dungeon do
         if not replicated_storage:GetAttribute("Dungeon") then
@@ -415,6 +441,11 @@ task.spawn(function()
         drop_list[v.Main.Value.Text] = (drop_list[v.Main.Value.Text] or 0) + 1
         drop_image[v.Main.Value.Text] = rewards[drops]
     end)
+
+    player.leaderstats.Inventory.Pets.ChildAdded:Connect(function(v)
+        if not config.auto_sell_shadow then return end
+        task.spawn(auto_sell_shadow)
+    end)
     
     for i, v in player.PlayerGui.Menus.Inventory.Main.Lists.Items:GetChildren() do
         local drops = v.Name:match("Ench") and v.Name or v.Name:match("Rune") and "Rune" or v.Name:match("Ticket") and "Ticket"
@@ -467,7 +498,7 @@ getgenv().run_connection = run_service.RenderStepped:Connect(function()
 end)
 
 local library = get_github_file("library/obsidian.lua")
-local window = library:CreateWindow({Title = "uzu01", Footer = "v1.2", ToggleKeybind = Enum.KeyCode.LeftControl, Center = true, ShowCustomCursor = false})
+local window = library:CreateWindow({Title = "uzu01", Footer = "v1.3", ToggleKeybind = Enum.KeyCode.LeftControl, Center = true, ShowCustomCursor = false})
 local home = window:AddTab("Main", "tractor")
 local webhook = window:AddTab("Webhook", "webhook")
 
@@ -488,10 +519,13 @@ local tab = {
 
     castle = home:AddRightGroupbox("Castle"),
     dungeon = home:AddRightGroupbox("Dungeon"),
-    weapon = home:AddRightGroupbox("Weapon"),
-
-    webhook = webhook:AddLeftGroupbox("Webhook")
+    
+    webhook = webhook:AddLeftGroupbox("Webhook"),
 }
+
+local weap_box = home:AddRightTabbox("")
+tab.weapon = weap_box:AddTab("Weapon")
+tab.shadow = weap_box:AddTab("Shadow")
 
 tab.main:AddToggle("", {Text = "Enabled", Default = config.auto_mob, Callback = function(v)
     config.auto_mob = v
@@ -552,6 +586,21 @@ tab.weapon:AddToggle("", {Text = "Auto Upgrade Weapon", Default = config.auto_up
     save()
 
     task.spawn(auto_upgrade_weapon)
+end})
+
+tab.shadow:AddToggle("", {Text = "Auto Sell Shadow", Default = config.auto_sell_shadow, Callback = function(v)
+    config.auto_sell_shadow = v
+    save()
+
+    task.spawn(auto_sell_shadow)
+end})
+
+tab.shadow:AddDropdown("", {Text = "Rank To Sell", Values = ranks, Default = config.selected_ranks, Multi = true, Callback = function(val)
+    config.selected_ranks = {}
+    for i, v in val do
+        table.insert(config.selected_ranks, i)
+    end
+    save()
 end})
 
 tab.dungeon:AddToggle("", {Text = "Auto Dungeon", Default = config.auto_dungeon, Callback = function(v)
