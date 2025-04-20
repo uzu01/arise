@@ -480,7 +480,7 @@ tab.main:AddToggle("", {Text = "Can Teleport", Default = config.can_teleport, Ca
     save()
 end})
 
-tab.main_settings:AddSlider("", {Text = "Kill Speed", Default = config.kill_speed, Min = 0, Max = 2, Rounding = 0.1, Suffix = "", Callback = function(v)
+tab.main_settings:AddSlider("", {Text = "Kill Speed", Default = config.kill_speed, Min = 0, Max = 5, Rounding = 0.1, Suffix = "", Callback = function(v)
     config.kill_speed = v
     save()
 end})
