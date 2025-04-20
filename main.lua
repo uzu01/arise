@@ -94,7 +94,7 @@ function fire_remote(args, char, event)
     end
     getgenv().require = function() return{} end
 
-    if args then
+    if not char then
         for i, v in utf8_chars do
             replicated_storage.BridgeNet2.dataRemoteEvent:FireServer({args, v})
         end
