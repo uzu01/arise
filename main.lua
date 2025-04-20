@@ -344,6 +344,15 @@ function auto_upgrade_weapon()
     end
 end
 
+function auto_dungeon()
+    while task.wait() and config.auto_dungeon do
+        if not replicated_storage:GetAttribute("Dungeon") then
+            start_dungeon()
+            task.wait(5)
+        end
+    end
+end
+
 function auto_replay()
     while task.wait() and config.auto_replay do
         if not replicated_storage:GetAttribute("Dungeon") then continue end
@@ -549,9 +558,7 @@ tab.dungeon:AddToggle("", {Text = "Auto Dungeon", Default = config.auto_dungeon,
     config.auto_dungeon = v
     save()
 
-    if config.auto_dungeon and not replicated_storage:GetAttribute("Dungeon") then
-        task.spawn(start_dungeon)
-    end
+    task.spawn(auto_dungeon)
 end})
 
 tab.dungeon:AddToggle("", {Text = "Auto Replay", Default = config.auto_replay, Callback = function(v)
