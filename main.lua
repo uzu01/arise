@@ -10,7 +10,7 @@ if not getidentity then
     getgenv().require = function() return {} end
 end
 
-repeat task.wait() until player:GetAttribute("Loaded") and workspace.__Extra:FindFirstChild("__Spawns")
+repeat task.wait() until player:GetAttribute("Loaded") and workspace.__Extra:FindFirstChild("__Spawns") and player.PlayerGui:FindFirstChild("__Disable")
 
 getgenv().config = {auto_show = true}
 getgenv().executed_time = os.time()
