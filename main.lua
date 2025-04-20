@@ -403,7 +403,7 @@ function auto_buy_potion()
     while task.wait() and config.auto_buy_potion do
         for i, v in config.selected_potions do
             local potion = player.leaderstats.Inventory.Items:FindFirstChild(potions_data[v])
-            if potion and potion:GetAttribute("Amount") >= 25 then continue end
+            if potion and potion:GetAttribute("Amount") >= 50 then continue end
             fire_remote({["Name"] = v, ["Type"] = "Product", ["SubType"] = "Products", ["Event"] = "TicketShop"}, "\n", "GENERAL_EVENT")
         end
     end
