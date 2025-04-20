@@ -427,8 +427,7 @@ getgenv().run_connection = run_service.RenderStepped:Connect(function()
     end
 end)
 
---local library = loadstring(game:HttpGet(get_github_file("library/obsidian.lua")))()
-local library = loadstring(game:HttpGet("http://192.168.100.10:5500/library/obsidian.lua"))()
+local library = loadstring(game:HttpGet(get_github_file("library/obsidian.lua")))()
 local window = library:CreateWindow({Title = "uzu01", Footer = "v1.0", ToggleKeybind = Enum.KeyCode.LeftControl, Center = true, AutoShow = config.auto_show, ShowCustomCursor = false})
 local home = window:AddTab("Main", "tractor")
 local webhook = window:AddTab("Webhook", "webhook")
