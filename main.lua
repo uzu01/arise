@@ -6,6 +6,10 @@ player.Idled:Connect(function()
     virtual_user:ClickButton2(Vector2.new())
 end)
 
+if not getidentity then
+    getgenv().require = function() return {} end
+end
+
 repeat task.wait() until player:GetAttribute("Loaded") and workspace.__Extra:FindFirstChild("__Spawns")
 
 getgenv().config = {auto_show = true}
@@ -23,6 +27,7 @@ local drop_list = {}
 
 local potions = {"GemsBoost", "CoinsBoost", "ShadowBoost", "DropsBoost", "ExpBoost"}
 local dusts = {"Legendary To Rare", "Common To Rare", "Rare To Legendary", "Rare To Common"}
+local utf8_chars = {"\a", "\b", "\f", "\n", "\r", "\t", "\v", "\z", "\0", "\1", "\2", "\3", "\4", "\5", "\6", "\7", "\8", "\9"}
 
 local rewards = {
     EnchCommon = "<:common_dust:1363132409851150347>",
@@ -83,18 +88,19 @@ function send_webhook(text, ...)
 end
 
 function fire_remote(args, char, event)
-    if getidentity() > 3 then
+    if getidentity and getidentity() > 3 then
         bridge_net_2.ReferenceBridge(event):Fire(args)
         return   
     end
-    
-    if not char then
+    getgenv().require = function() return{} end
+
+    if args then
         for i, v in utf8_chars do
-             replicated_storage.BridgeNet2.dataRemoteEvent:FireServer(args, v)
+            replicated_storage.BridgeNet2.dataRemoteEvent:FireServer({args, v})
         end
         return
     end
-    replicated_storage.BridgeNet2.dataRemoteEvent:FireServer(args, char)
+    replicated_storage.BridgeNet2.dataRemoteEvent:FireServer({args, char})
 end
 
 function get_farming_data()
@@ -600,6 +606,25 @@ tab.misc:AddToggle("", {Text = "Hide Name - CLIENT", Default = config.hide_name,
     task.spawn(hide_name)
 end})
 
+tab.misc:AddToggle("", {Text = "Auto Execute", Default = config.auto_execute, Callback = function(v)
+    config.auto_execute = v
+    save()
+
+    if not v then return end
+    queue_on_teleport([[
+        getgenv().key = "11ASTCTVY0EYJKnPq5ILQR_ODcVi11MRxpZgAPLZA80f9v4NO3SAriM4xhWm4wVKQaM4TKEX2KT2GL39AA"
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/uzu01/uzu/refs/heads/main/main.lua"))()
+    ]])
+end})
+
+tab.misc:AddToggle("", {Text = "Auto Hide UI", Default = config.auto_show, Callback = function(v)
+    config.auto_show = v
+    save()
+
+    if not v then return end
+    library:Toggle(not v)
+end})
+
 tab.misc:AddButton("", {Text = "Unload UI", Func = function()
     library:Unload()
 end})
@@ -653,4 +678,4 @@ time_label = tab.info:AddLabel("Server Time:")
 cash_label = tab.info:AddLabel("Cash Earned:")
 gems_label = tab.info:AddLabel("Gems Earned:")
 
-print("script loaded")
+print("script laoded")
