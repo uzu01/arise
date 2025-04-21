@@ -12,7 +12,7 @@ end
 
 repeat task.wait() until player:GetAttribute("Loaded") and workspace.__Extra:FindFirstChild("__Spawns") and player.PlayerGui:FindFirstChild("__Disable")
 
-getgenv().config = {auto_show = true}
+getgenv().config = {auto_show = false}
 getgenv().executed_time = os.time()
 
 local data_remote_event = replicated_storage.BridgeNet2.dataRemoteEvent
@@ -72,7 +72,7 @@ player.PlayerGui.__Disable.Menus.ChildAdded:Connect(function(v)
     v.Parent = player.PlayerGui.Menus
 end)
 
-repeat task.wait() until #player.PlayerGui.Menus:GetChildren() > 0
+repeat task.wait() until #player.PlayerGui.Menus:GetChildren() > 0 and #player.PlayerGui.Menus.Indexer.Main.Worlds:GetChildren() > 2
 
 function save()
     if not isfolder(folder) then makefolder(folder) end
