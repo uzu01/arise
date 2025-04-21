@@ -1,4 +1,11 @@
 if not game:IsLoaded() then game.Loaded:Wait() end
+
+getgenv().get_github_file = function(file)
+    local user, repo = "uzu01", "arise"
+    local file = ("https://raw.githubusercontent.com/%*/%*/refs/heads/main/%*"):format(user, repo, file)
+    return loadstring(game:HttpGet(file))()
+end
+
 get_github_file("global.lua")
 
 player.Idled:Connect(function()
@@ -203,7 +210,6 @@ function get_mobs(mob_type)
 end
 
 function hide_name()
-    task.wait(2)
     local root_part = get_humanoid_root_part()
     if not root_part then return end
 
@@ -410,9 +416,10 @@ function auto_buy_potion()
 end
 
 function auto_exchange_dust()
+    fire_remote({["Action"] = "Buy", ["Shop"] = "ExchangeShop", ["Item"] = "DgURankUpRune", ["Event"] = "ItemShopAction"}, "\n", "GENERAL_EVENT")
+
     while task.wait() and config.auto_exchange_dust do
         for i, v in config.selected_dust do
-            print(i, v, dusts_data[v])
             fire_remote({["Action"] = "Buy", ["Shop"] = "ExchangeShop", ["Item"] = dusts_data[v], ["Event"] = "ItemShopAction"}, "\n", "GENERAL_EVENT")
         end
     end
@@ -498,7 +505,7 @@ getgenv().run_connection = run_service.RenderStepped:Connect(function()
 end)
 
 local library = get_github_file("library/obsidian.lua")
-local window = library:CreateWindow({Title = "uzu01", Footer = "v1.3", ToggleKeybind = Enum.KeyCode.LeftControl, Center = true, ShowCustomCursor = false})
+local window = library:CreateWindow({Title = "uzu01", Footer = "v1.4", ToggleKeybind = Enum.KeyCode.LeftControl, Center = true, ShowCustomCursor = false})
 local home = window:AddTab("Main", "tractor")
 local webhook = window:AddTab("Webhook", "webhook")
 
