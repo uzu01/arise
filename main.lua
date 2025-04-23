@@ -478,9 +478,11 @@ if run_connection then run_connection:Disconnect() end
 getgenv().run_connection = run_service.RenderStepped:Connect(function()
     local character = get_character()
     local cash, gems, time = get_farming_data()
+    local can_tp = can_teleport()
     if not character then return end
 
     character:SetAttribute("InTp", true)
+    float(can_tp)
 
     if gems_label then
         time_label:SetText(time)
@@ -488,7 +490,7 @@ getgenv().run_connection = run_service.RenderStepped:Connect(function()
         gems_label:SetText(gems)
     end
     
-    if can_teleport() then
+    if can_tp then
         no_clip()
     end
 
